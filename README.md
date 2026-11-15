@@ -6,7 +6,7 @@ Elle tourne en local sur **Windows**, **Linux** et **macOS**. Aucun fichier 3D n
 
 ## Télécharger
 
-Les installeurs de la version courante sont sur la page **Releases** du dépôt GitHub.
+Les installeurs de la version courante sont sur la page Releases : https://github.com/TonyLaPoche/gf-3d-asset-manager/releases
 
 | Système | Fichier | Usage |
 | --- | --- | --- |
