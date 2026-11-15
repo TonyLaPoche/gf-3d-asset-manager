@@ -1,0 +1,68 @@
+{
+  "name": "gf-3d-asset-manager",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Revue humaine locale de fichiers GLB : on garde, on étudie, on supprime.",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "postinstall": "node scripts/copy-draco.cjs && node scripts/make-exemples.cjs",
+    "dev": "concurrently -k \"vite --port 5173 --strictPort\" \"wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .\"",
+    "build": "vite build",
+    "start": "vite build && electron .",
+    "dist": "vite build && electron-builder --publish never",
+    "test": "node scripts/self-check.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "three": "^0.171.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.187.0",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.6",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "fr.gf.revue3d",
+    "productName": "Revue 3D",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "exemples/**/*",
+      "package.json",
+      "!dist/**/*.map"
+    ],
+    "win": {
+      "target": ["nsis", "zip"],
+      "artifactName": "Revue3D-${version}-${os}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Revue 3D",
+      "artifactName": "Revue3D-${version}-${os}-${arch}.${ext}"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Graphics",
+      "synopsis": "Revue humaine de fichiers GLB",
+      "artifactName": "Revue3D-${version}-${os}-${arch}.${ext}"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.graphics-design",
+      "artifactName": "Revue3D-${version}-${os}-${arch}.${ext}"
+    }
+  }
+}

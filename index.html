@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Revue 3D</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="brand">
+          <strong>Revue 3D</strong>
+          <span>Lecture locale des GLB, au rythme d’une personne</span>
+        </div>
+        <div id="folderLabel">Aucun dossier</div>
+        <div class="header-actions">
+          <button id="toggleList" type="button">Liste</button>
+          <button id="refresh" type="button" disabled>Actualiser</button>
+          <button id="openExcel" type="button" disabled>Ouvrir le classeur</button>
+          <button id="pick" type="button">Choisir un dossier</button>
+          <button id="helpBtn" type="button">Aide</button>
+        </div>
+      </header>
+
+      <section id="welcome">
+        <div class="welcome-card">
+          <p class="eyebrow">Contrôle humain</p>
+          <h1>Regarder chaque asset, puis trancher.</h1>
+          <p class="lead">
+            Choisissez le dossier qui contient vos fichiers .glb et .gltf. Les sous-dossiers sont inclus.
+            Un seul modèle est affiché à la fois. Après chaque vote, le suivant arrive.
+            Rien n’est effacé sur le disque : les décisions remplissent un classeur Excel.
+          </p>
+          <div class="welcome-votes">
+            <article>
+              <b>On garde</b>
+              <span>L’asset reste dans la bibliothèque.</span>
+            </article>
+            <article>
+              <b>On étudie</b>
+              <span>À revoir, trop tôt pour décider.</span>
+            </article>
+            <article>
+              <b>On supprime</b>
+              <span>Marqué pour suppression. Le fichier reste en place.</span>
+            </article>
+          </div>
+          <button id="pickWelcome" type="button">Choisir un dossier</button>
+          <p class="fine">
+            Vous pouvez aussi déposer un dossier dans la fenêtre. La souris reprend les réflexes de F3D :
+            clic gauche pour tourner, clic droit pour déplacer, molette pour zoomer.
+          </p>
+        </div>
+      </section>
+
+      <div id="workspace">
+        <aside id="sidebar">
+          <label class="search">
+            <input id="search" type="search" placeholder="Filtrer par nom ou chemin" autocomplete="off" />
+          </label>
+          <div class="filters" id="filters">
+            <button type="button" data-filter="pending" class="active">À voter</button>
+            <button type="button" data-filter="garder">On garde</button>
+            <button type="button" data-filter="etudier">On étudie</button>
+            <button type="button" data-filter="supprimer">On supprime</button>
+            <button type="button" data-filter="all">Tous</button>
+          </div>
+          <div id="list">
+            <div id="listSpacer">
+              <div id="listRows"></div>
+            </div>
+          </div>
+        </aside>
+
+        <main>
+          <div id="viewport">
+            <canvas id="c"></canvas>
+            <div id="flash"></div>
+            <div class="overlay-top">
+              <div>
+                <div class="name-line">
+                  <h2 id="fileName"></h2>
+                  <span id="pill" class="pill" hidden></span>
+                </div>
+                <p id="filePath"></p>
+                <p id="meta"></p>
+                <p id="warnings"></p>
+                <button id="showFile" type="button">Voir dans le dossier</button>
+              </div>
+              <div class="viewtools">
+                <button id="frameBtn" type="button">Recadrer</button>
+                <button id="gridBtn" type="button" aria-pressed="true">Grille</button>
+                <button id="wireBtn" type="button" aria-pressed="false">Fil de fer</button>
+              </div>
+            </div>
+            <div id="loadbar"><div id="loadbarFill"></div></div>
+            <div id="errorBox"></div>
+            <div id="emptyView">
+              <h3 id="emptyTitle">Aucun fichier</h3>
+              <p id="emptyText"></p>
+            </div>
+          </div>
+
+          <footer>
+            <div class="progress" id="progress">
+              <div id="counts"></div>
+              <div class="bar"><div id="barFill"></div></div>
+            </div>
+            <div class="actions">
+              <button id="prev" type="button" class="nav">Précédent</button>
+              <button id="garder" type="button" class="vote garder">On garde<kbd>G</kbd></button>
+              <button id="etudier" type="button" class="vote etudier">On étudie<kbd>E</kbd></button>
+              <button id="supprimer" type="button" class="vote supprimer">On supprime<kbd>S</kbd></button>
+              <button id="next" type="button" class="nav">Suivant</button>
+            </div>
+            <div class="statusrow">
+              <span id="safetyNote">Aucun fichier 3D n’est supprimé</span>
+              <span id="pos">—</span>
+              <span id="statusline">En attente d’un dossier</span>
+            </div>
+          </footer>
+        </main>
+      </div>
+    </div>
+
+    <div id="dropveil">Déposez le dossier d’assets</div>
+    <div id="busy"><p id="busyText">Lecture du dossier…</p></div>
+    <div id="toast" role="status"></div>
+
+    <div id="help" class="modal" hidden>
+      <div class="modal-card">
+        <header>
+          <h2>Comment voter</h2>
+          <button id="helpClose" type="button">Fermer</button>
+        </header>
+        <p>Le vote enregistre la décision puis passe au fichier suivant. Le modèle 3D n’est ni déplacé ni effacé.</p>
+        <ul>
+          <li><kbd>G</kbd> On garde</li>
+          <li><kbd>E</kbd> On étudie</li>
+          <li><kbd>S</kbd> ou <kbd>Suppr</kbd> On supprime</li>
+          <li><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> du pavé numérique, dans le même ordre</li>
+          <li><kbd>←</kbd> <kbd>→</kbd> fichier précédent ou suivant, sans voter</li>
+          <li><kbd>Ctrl</kbd> + <kbd>Z</kbd> annule le dernier vote</li>
+          <li><kbd>R</kbd> ou double-clic recadre la vue</li>
+          <li><kbd>Espace</kbd> lecture ou pause des animations</li>
+          <li><kbd>W</kbd> fil de fer · <kbd>L</kbd> grille · <kbd>H</kbd> cette aide</li>
+        </ul>
+        <p>Clic gauche : tourner. Clic droit ou molette appuyée : déplacer. Molette : zoomer. Le classeur <strong>revue-assets.xlsx</strong> est écrit dans le dossier <strong>.gf-revue</strong>, à côté d’une session qui permet de reprendre.</p>
+        <p><button id="tourReplay" type="button">Revoir le tutoriel</button></p>
+      </div>
+    </div>
+
+    <div id="tour" hidden>
+      <div id="tourBlock"></div>
+      <div id="tourHole"></div>
+      <div id="tourCard" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+        <p id="tourKicker" class="tour-kicker"></p>
+        <h2 id="tourTitle"></h2>
+        <p id="tourBody"></p>
+        <div class="tour-actions">
+          <button id="tourSkip" type="button">Passer</button>
+          <span>
+            <button id="tourBack" type="button">Retour</button>
+            <button id="tourNext" type="button">Suivant</button>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

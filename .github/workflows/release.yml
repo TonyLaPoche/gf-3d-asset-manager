@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: win
+          - os: ubuntu-latest
+            target: linux
+          - os: macos-latest
+            target: mac
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Dépendances système Linux
+        if: matrix.target == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y fakeroot dpkg rpm
+
+      - name: Installer les paquets
+        run: npm ci
+
+      - name: Construire l’installeur
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: npm run build && npx electron-builder --publish never --${{ matrix.target }}
+
+      - name: Déposer les fichiers
+        uses: actions/upload-artifact@v4
+        with:
+          name: revue3d-${{ matrix.target }}
+          path: |
+            release/*.exe
+            release/*.zip
+            release/*.AppImage
+            release/*.deb
+            release/*.dmg
+          if-no-files-found: error
+
+  publish:
+    name: Publier la release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer les installeurs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: revue3d-*
+          merge-multiple: true
+          path: dist-release
+
+      - name: Créer la release GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" dist-release/* \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "Revue 3D ${GITHUB_REF_NAME}" \
+            --notes "Installeurs Windows (.exe, .zip), Linux (.AppImage, .deb) et macOS (.dmg, .zip). Les binaires ne sont pas signés : Windows SmartScreen et macOS Gatekeeper demandent une confirmation. Le README explique comment les ouvrir."
