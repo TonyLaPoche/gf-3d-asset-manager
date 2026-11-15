@@ -12,7 +12,7 @@ Les installeurs de la version courante sont sur la page Releases : https://githu
 | --- | --- | --- |
 | Windows 10 ou 11, 64 bits | `Revue3D-…-win-x64.exe` | Installeur. Le `.zip` est une version portable, sans installation. |
 | Linux x64 | `Revue3D-…-linux-x64.AppImage` | Rendre le fichier exécutable, puis le lancer. Le `.deb` s’installe avec `sudo apt install ./Revue3D-….deb`. |
-| macOS Apple Silicon ou Intel | `Revue3D-…-mac-….dmg` | Ouvrir l’image disque et glisser l’application dans Applications. Le `.zip` contient la même application. |
+| macOS Apple Silicon (arm64) | `Revue3D-…-mac-arm64.dmg` | Ouvrir l’image disque et glisser l’application dans Applications. Le `.zip` contient la même application. Cette version ne tourne pas sur un Mac Intel. |
 
 Les binaires ne sont pas signés avec un certificat payant.
 

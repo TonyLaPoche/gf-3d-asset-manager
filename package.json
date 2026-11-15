@@ -1,6 +1,6 @@
 {
   "name": "gf-3d-asset-manager",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Revue humaine locale de fichiers GLB : on garde, on étudie, on supprime.",
   "main": "electron/main.cjs",
@@ -24,7 +24,7 @@
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
     "electron": "^33.2.1",
-    "electron-builder": "^25.1.8",
+    "electron-builder": "^26.18.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.6",
     "wait-on": "^8.0.1"
@@ -44,7 +44,10 @@
       "!dist/**/*.map"
     ],
     "win": {
-      "target": ["nsis", "zip"],
+      "target": [
+        "nsis",
+        "zip"
+      ],
       "artifactName": "Revue3D-${version}-${os}-${arch}.${ext}"
     },
     "nsis": {
@@ -54,14 +57,20 @@
       "artifactName": "Revue3D-${version}-${os}-${arch}.${ext}"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Graphics",
       "synopsis": "Revue humaine de fichiers GLB",
       "maintainer": "TonyLaPoche <61584660+TonyLaPoche@users.noreply.github.com>",
       "artifactName": "Revue3D-${version}-${os}-${arch}.${ext}"
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "category": "public.app-category.graphics-design",
       "artifactName": "Revue3D-${version}-${os}-${arch}.${ext}"
     }
