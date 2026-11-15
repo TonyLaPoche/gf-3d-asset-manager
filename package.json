@@ -1,6 +1,6 @@
 {
   "name": "gf-3d-asset-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Revue humaine locale de fichiers GLB : on garde, on étudie, on supprime.",
   "main": "electron/main.cjs",
@@ -57,6 +57,7 @@
       "target": ["AppImage", "deb"],
       "category": "Graphics",
       "synopsis": "Revue humaine de fichiers GLB",
+      "maintainer": "TonyLaPoche <61584660+TonyLaPoche@users.noreply.github.com>",
       "artifactName": "Revue3D-${version}-${os}-${arch}.${ext}"
     },
     "mac": {
